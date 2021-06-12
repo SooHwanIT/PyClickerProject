@@ -37,7 +37,7 @@ def Button_OnClick():  # 버튼을 누를때마다 실행되는 함수
     global gold_per_click
     gold += gold_per_click  # 골드를 1 늘려줌 (GPC로 변경 예정 )
     gold_text.set(gold)  # 골드를 표시해주는 골드 텍스트를 업데이트 해줌
-    Save()
+    print(gold)
 
 gold_Button = Button(window, text='Button', command=Button_OnClick).pack(
     side=BOTTOM, anchor=CENTER)  # 골드 버튼을 만들고 누를때마다 함수를 실행시킴
@@ -72,6 +72,10 @@ class Click_Upgrade_button():
             
     def GetLevel(self):
         return self.level
+    def SetLevel(self,level):
+        self.level = level
+        self.cost =  Upgrade_Cost(self.startCost,self.level,self.cost_pow) 
+        self.UI_Update() #UI 업데이트
     def UI_Update(self):
         self.text.set(str(self.name) +".Lv"+ str(self.level) + "\n 비용 : " + str(int(self.cost)) + "\ngold/click증가량: " + str(self.upgrade_pow))
         gold_per_click_text.set(gold_per_click)  # 라벨 업데이트
@@ -102,7 +106,14 @@ class Auto_Upgrade_button():
             self.cost =  Upgrade_Cost(self.startCost,self.level,self.cost_pow)  # 비용 증가
             gold_per_sec += self.upgrade_pow #GPS 를 업그레이드 수치만큼 증가
             self.UI_Update() #UI 업데이트
-        
+
+    def GetLevel(self):
+        return self.level
+    def SetLevel(self,level):
+        self.level = level
+        self.cost =  Upgrade_Cost(self.startCost,self.level,self.cost_pow) 
+        self.UI_Update() #UI 업데이트
+
     def UI_Update(self):
         self.text.set(str(self.name) +".Lv"+ str(self.level) + "\n 비용 : " + str(int(self.cost)) + "\ngold/sec 증가량: " + str(self.upgrade_pow))
         gold_per_sec_text.set(gold_per_sec)# 라벨 업데이트
@@ -113,10 +124,10 @@ Cbt = [0,0,0]
 Cbt[0] = Click_Upgrade_button("test1", 10, 1.2, 1)
 Cbt[1] = Click_Upgrade_button("test2", 200, 1.2, 10)
 Cbt[2] = Click_Upgrade_button("test3", 3000, 1.2, 20)
-
-Abt1 = Auto_Upgrade_button("test1", 10, 1.2, 1)
-Abt2 = Auto_Upgrade_button("test2", 200, 1.2, 5)
-Abt3 = Auto_Upgrade_button("test3", 3000, 1.2, 10)
+Abt = [0,0,0]
+Abt[0] = Auto_Upgrade_button("test1", 10, 1.2, 1)
+Abt[1] = Auto_Upgrade_button("test2", 200, 1.2, 5)
+Abt[2] = Auto_Upgrade_button("test3", 3000, 1.2, 10)
 
 
 def Auto_Gold():  # 1초마다 실행되는 함수
@@ -125,13 +136,54 @@ def Auto_Gold():  # 1초마다 실행되는 함수
     gold += gold_per_sec #골드를 GPS만큼 증가
     gold_text.set(gold) #라벨 업데이트
     threading.Timer(1, Auto_Gold).start()  # 1초마다 재귀실행
+    
     #함수 마지막에 1초 후에 다시 동일 함수를 실행함으로써 1초마다 재귀실행되는 함수 생성
+Auto_Gold() #함수 실행
+
 def Save():
     f = open("info.txt", 'w') 
-    f.write(str(gold))
-    for i in range(1,len(Cbt)):
-        f.write(str(Cbt[i].GetLevel()))
+    SaveUpdate=''
+    SaveUpdate+=str(gold)+'\n' + str(gold_per_click) +'\n'+str(gold_per_sec)+'\n'
+    SaveUpdate+=str(len(Cbt))+'\n'
+    for i in range(0,len(Cbt)):
+        SaveUpdate += str(Cbt[i].GetLevel()) + '\n'
+    SaveUpdate+=str(len(Abt))+'\n'
+    for i in range(0,len(Abt)):
+        SaveUpdate += str(Abt[i].GetLevel()) + '\n'
+    f.write(str(SaveUpdate))
     f.close()
-Auto_Gold() #함수 실행
+
+def test():
+    print("test")
+
+def Load():
+    global gold
+    global gold_per_click 
+    global gold_per_sec
+
+    f = open("info.txt", 'r')
+    
+    gold = int(f.readline())
+    gold_per_click = int(f.readline())
+    gold_per_sec = int(f.readline()) 
+    
+    Cbtindex = 3 
+    Cbtindex = int(f.readline())
+    for i in range(0,int(Cbtindex)):
+        Cbt[i].SetLevel(int(f.readline()))
+
+    Abtindex = 3 
+    Abtindex = int(f.readline())
+    for i in range(0,int(Abtindex)):
+        Abt[i].SetLevel(int(f.readline()))
+
+    f.close() 
+
+Button( #버튼 생성
+            window, text="L", command=Load).pack(
+            side=TOP, anchor=S)
+Button( #버튼 생성
+            window, text="S", command=Save).pack(
+            side=TOP, anchor=S)
 
 window.mainloop()
