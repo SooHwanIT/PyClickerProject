@@ -127,7 +127,7 @@ def Auto_Gold():  # 1초마다 실행되는 함수
     threading.Timer(1, Auto_Gold).start()  # 1초마다 재귀실행
     #함수 마지막에 1초 후에 다시 동일 함수를 실행함으로써 1초마다 재귀실행되는 함수 생성
 def Save():
-    f = open("info.txt", 'w')
+    f = open("info.txt", 'w') 
     f.write(str(gold))
     for i in range(1,len(Cbt)):
         f.write(str(Cbt[i].GetLevel()))
