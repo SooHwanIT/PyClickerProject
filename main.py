@@ -15,13 +15,13 @@ gold_per_sec = 0
 #gold 선언
 gold_text = StringVar()  # 골드를 표시할 골드_텍스트를 텍스트 형식으로 지정
 gold_text.set(gold)  # 골드 텍스트를 골드로 지정 (초기값 = 0)
-gold_Labal = Label(window, textvariable=gold_text).grid(row=0, column=0)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
+gold_Labal = Label(window, textvariable=gold_text).grid(row=0, column=1)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 #gold per click 선언
 gold_per_click_text = StringVar()  # 골드 per 클릭을 표시할 골드 per 클릭_텍스트를 텍스트 형식으로 지정
 # 골드 per 클릭 텍스트를 골드 per 클릭로 지정 (초기값 = 0)
 gold_per_click_text.set(gold_per_click)
-gold_per_click_Labal = Label(window, textvariable=gold_per_click_text).grid(row=0, column=1)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
+gold_per_click_Labal = Label(window, textvariable=gold_per_click_text).grid(row=0, column=0)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 #gold per sec 선언
 gold_per_sec_text = StringVar()  # 골드perSec를 표시할 골드perSec_텍스트를 텍스트 형식으로 지정
@@ -52,7 +52,7 @@ class Click_Upgrade_button():
         self.text = StringVar()  # 버튼 text
         self.text.set('loding')  # text 초기화
         self.button = Button(  # 버튼 생성
-            window, textvariable=self.text, command=self.Buy_Click_Upgrade).grid(row=index+1, column=2)
+            window, textvariable=self.text, command=self.Buy_Click_Upgrade).grid(row=index+1, column=0)
         self.UI_Update()  # UI 업데이트
 
     def Buy_Click_Upgrade(self):
@@ -91,7 +91,7 @@ class Auto_Upgrade_button():
         self.text = StringVar()  # 버튼 text 선언
         self.text.set("loding")  # 버튼 text 초기화
         self.button = Button(  # 버튼 생성
-            window, textvariable=self.text, command=self.Buy_Auto_Gold).grid(row=index+1, column=0)
+            window, textvariable=self.text, command=self.Buy_Auto_Gold).grid(row=index+1, column=2)
         self.UI_Update()
 
     def Buy_Auto_Gold(self):  # 버튼을 누를때 실행
@@ -179,7 +179,13 @@ def Load():
 
     f.close()
 
+menubar = Menu(window)
+filemenu = Menu(menubar, tearoff=0)  
+menubar.add_cascade(label="File", menu=filemenu) 
+filemenu.add_command(label="Save", command=Save)  
+filemenu.add_command(label="Load", command=Load)  
 
+window.config(menu=menubar)
 # Button(  # 버튼 생성
 #     window, text="L", command=Load).pack(
 #     side=TOP, anchor=S)
