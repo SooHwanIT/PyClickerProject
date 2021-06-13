@@ -8,25 +8,25 @@ window = Tk()
 
 window.geometry('400x400')
 #변수 선언
-gold = 0
-gold_per_click = 1
-gold_per_sec = 0
 
 #gold 선언
+gold = 0
 gold_text = StringVar()  # 골드를 표시할 골드_텍스트를 텍스트 형식으로 지정
 gold_text.set(gold)  # 골드 텍스트를 골드로 지정 (초기값 = 0)
 gold_Labal = Label(window, textvariable=gold_text).grid(row=0, column=1)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 #gold per click 선언
+gold_per_click = 1
 gold_per_click_text = StringVar()  # 골드 per 클릭을 표시할 골드 per 클릭_텍스트를 텍스트 형식으로 지정
 # 골드 per 클릭 텍스트를 골드 per 클릭로 지정 (초기값 = 0)
 gold_per_click_text.set(gold_per_click)
 gold_per_click_Labal = Label(window, textvariable=gold_per_click_text).grid(row=0, column=0)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 #gold per sec 선언
-gold_per_sec_text = StringVar()  # 골드perSec를 표시할 골드perSec_텍스트를 텍스트 형식으로 지정
-gold_per_sec_text.set(gold_per_sec)  # 골드perSec 텍스트를 골드perSec로 지정 (초기값 = 0)
-gold_per_sec_Labal = Label(window, textvariable=gold_per_sec_text).grid(row=0, column=2)  # 골드perSec를 표시할 tk.labal을 생성 후 골드 택스트를 연결
+# gold_per_sec = 0
+# gold_per_sec_text = StringVar()  # 골드perSec를 표시할 골드perSec_텍스트를 텍스트 형식으로 지정
+# gold_per_sec_text.set(gold_per_sec)  # 골드perSec 텍스트를 골드perSec로 지정 (초기값 = 0)
+# gold_per_sec_Labal = Label(window, textvariable=gold_per_sec_text).grid(row=0, column=2)  # 골드perSec를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 def Button_OnClick():  # 버튼을 누를때마다 실행되는 함수
     global gold  # 골드를 글로벌 함수로 지정해서 참조할수 있게 만듬
@@ -81,9 +81,10 @@ class Click_Upgrade_button():
         gold_text.set(gold)  # 라벨 업데이트
 
 class Auto_Upgrade_button():
-    def __init__(self, name, startCost, cost_pow, upgrade_pow,index):  # 이름, 비용, 비용 증가량, 업그레이드 수치
+    def __init__(self, name, startCost, cost_pow, upgrade_pow,index,time):  # 이름, 비용, 비용 증가량, 업그레이드 수치
         self.name = name  # 이름
         self.level = 0  # 레벨
+        self.time = time #시간
         self.startCost = startCost  # 초기업그레이드 비용
         self.cost = startCost  # 업그레이드 비용
         self.cost_pow = cost_pow  # 업그레이드 비용 증가량
@@ -93,16 +94,16 @@ class Auto_Upgrade_button():
         self.button = Button(  # 버튼 생성
             window, textvariable=self.text, command=self.Buy_Auto_Gold).grid(row=index+1, column=2)
         self.UI_Update()
+        self.Auto_Gold_Play()  # 함수 실행
 
     def Buy_Auto_Gold(self):  # 버튼을 누를때 실행
         global gold  # 골드를로벌 함수로 지정해서 참조할수 있게 만듬
-        global gold_per_sec  # ''
         if gold >= self.cost:  # 골드 >= 비용
             gold -= self.cost  # 비용만큼 골드 차감
             self.level += 1  # 레벨 1 증가
             self.cost = Upgrade_Cost(
                 self.startCost, self.level, self.cost_pow)  # 비용 증가
-            gold_per_sec += self.upgrade_pow  # GPS 를 업그레이드 수치만큼 증가
+            # gold_per_sec += self.upgrade_pow  # GPS 를 업그레이드 수치만큼 증가
             self.UI_Update()  # UI 업데이트
 
     def GetLevel(self):
@@ -114,10 +115,15 @@ class Auto_Upgrade_button():
         self.UI_Update()  # UI 업데이트
 
     def UI_Update(self):
-        self.text.set(str(self.name) + ".Lv" + str(self.level) + "\n 비용 : " +
-                      str(int(self.cost)) + "\ngold/sec 증가량: " + str(self.upgrade_pow))
-        gold_per_sec_text.set(gold_per_sec)  # 라벨 업데이트
+        self.text.set(self.name+".Lv"+str(self.level)+"("+str(self.time) +"초)\nLv"+str(self.level) +" : 골드 증가량"+ str(int(self.level*self.upgrade_pow))+"\n 업그레이드 비용 "+str(self.cost)+"\nLv"+str(self.level+1) +" : 골드 증가량"+str(int((self.level+1)*self.upgrade_pow)))
+        # gold_per_sec_text.set(gold_per_sec)  # 라벨 업데이트
         gold_text.set(gold)  # 라벨 업데이트
+    
+    def Auto_Gold_Play(self):  # 1초마다 실행되는 함수
+        global gold  # 글로벌로 골드 선언
+        gold += self.upgrade_pow*self.level  # 골드를 GPS만큼 증가
+        gold_text.set(gold)  # 라벨 업데이트
+        threading.Timer(self.time, self.Auto_Gold_Play).start()  # 1초마다 재귀실행
 
 
 Cbt = [0, 0, 0]
@@ -126,19 +132,12 @@ Cbt[1] = Click_Upgrade_button("test2", 200, 1.2, 10,1)
 Cbt[2] = Click_Upgrade_button("test3", 3000, 1.2, 20,2)
 
 Abt = [0, 0, 0]
-Abt[0] = Auto_Upgrade_button("test1", 10, 1.2, 1,0)
-Abt[1] = Auto_Upgrade_button("test2", 200, 1.2, 5,1)
-Abt[2] = Auto_Upgrade_button("test3", 3000, 1.2, 10,2)
-
-def Auto_Gold():  # 1초마다 실행되는 함수
-    global gold  # 글로벌로 골드 선언
-    global gold_per_sec  # 글로벌로 GPS 선언
-    gold += gold_per_sec  # 골드를 GPS만큼 증가
-    gold_text.set(gold)  # 라벨 업데이트
-    threading.Timer(1, Auto_Gold).start()  # 1초마다 재귀실행
+Abt[0] = Auto_Upgrade_button("test1", 1, 1.2, 1,0,1)
+Abt[1] = Auto_Upgrade_button("test2", 1, 1.2, 1000,1,10)
+Abt[2] = Auto_Upgrade_button("test3", 3000, 1.2, 10,2,3)
 
     #함수 마지막에 1초 후에 다시 동일 함수를 실행함으로써 1초마다 재귀실행되는 함수 생성
-Auto_Gold()  # 함수 실행
+
 
 
 def Save():
