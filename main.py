@@ -33,13 +33,12 @@ def Button_OnClick():  # 버튼을 누를때마다 실행되는 함수
     global gold_per_click
     gold += gold_per_click  # 골드를 1 늘려줌 (GPC로 변경 예정 )
     gold_text.set(gold)  # 골드를 표시해주는 골드 텍스트를 업데이트 해줌
-    print(gold)
 
 gold_Button = Button(window, text='Button', command=Button_OnClick).grid(row=5, column=1)  # 골드 버튼을 만들고 누를때마다 함수를 실행시킴
 
 def Upgrade_Cost(startCost, level, pow):  # 밸런스
-    print((startCost, level, pow))
     return int((level*pow)**2+(level*(pow+startCost)))+startCost
+
 
 class Click_Upgrade_button():
     def __init__(self, name, startCost, cost_pow, upgrade_pow,index):  # 이름, 비용, 비용 증가량, 업그레이드 수치
@@ -54,7 +53,7 @@ class Click_Upgrade_button():
         self.button = Button(  # 버튼 생성
             window, textvariable=self.text, command=self.Buy_Click_Upgrade).grid(row=index+1, column=0)
         self.UI_Update()  # UI 업데이트
-
+    
     def Buy_Click_Upgrade(self):
         global gold  # 골드를 글로벌 함수로 지정해서 참조할수 있게 만듬
         global gold_per_click
@@ -91,12 +90,20 @@ class Auto_Upgrade_button():
         self.upgrade_pow = upgrade_pow  # 업그레이드 수치
         self.text = StringVar()  # 버튼 text 선언
         self.text.set("loding")  # 버튼 text 초기화
+        
         self.button = Button(  # 버튼 생성
             window, textvariable=self.text, command=self.Buy_Auto_Gold).grid(row=index+1, column=2)
+        self.progressbar= Progressbar(
+            window, maximum=100*self.time, mode="determinate")
+        self.progressbar.start(10)
+        self.progressbar.grid(row=index+1, column=3)
+        
         self.UI_Update()
         self.Auto_Gold_Play()  # 함수 실행
 
     def Buy_Auto_Gold(self):  # 버튼을 누를때 실행
+
+
         global gold  # 골드를로벌 함수로 지정해서 참조할수 있게 만듬
         if gold >= self.cost:  # 골드 >= 비용
             gold -= self.cost  # 비용만큼 골드 차감
@@ -124,6 +131,7 @@ class Auto_Upgrade_button():
         gold += self.upgrade_pow*self.level  # 골드를 GPS만큼 증가
         gold_text.set(gold)  # 라벨 업데이트
         threading.Timer(self.time, self.Auto_Gold_Play).start()  # 1초마다 재귀실행
+
 
 
 Cbt = [0, 0, 0]
