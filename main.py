@@ -93,17 +93,16 @@ class Auto_Upgrade_button():
         
         self.button = Button(  # 버튼 생성
             window, textvariable=self.text, command=self.Buy_Auto_Gold).grid(row=index+1, column=2)
+
+        self.V_PB = DoubleVar()
         self.progressbar= Progressbar(
-            window, maximum=100*self.time, mode="determinate")
-        self.progressbar.start(10)
+            window, maximum=100*self.time,variable=self.V_PB,length=100, mode="determinate")
         self.progressbar.grid(row=index+1, column=3)
-        
+        self.progressbar.start(4)
         self.UI_Update()
         self.Auto_Gold_Play()  # 함수 실행
 
     def Buy_Auto_Gold(self):  # 버튼을 누를때 실행
-
-
         global gold  # 골드를로벌 함수로 지정해서 참조할수 있게 만듬
         if gold >= self.cost:  # 골드 >= 비용
             gold -= self.cost  # 비용만큼 골드 차감
@@ -130,9 +129,13 @@ class Auto_Upgrade_button():
         global gold  # 글로벌로 골드 선언
         gold += self.upgrade_pow*self.level  # 골드를 GPS만큼 증가
         gold_text.set(gold)  # 라벨 업데이트
+        self.V_PB.set(0)
+        # for i in [1,1,1,1,1,1,1,1,1,1,1,1]:
+        #     time.sleep(0.1)
+        #     self.progressbar.step(10)
+        #     if self.V_PB.get() >= self.time*10 : break
+        # self.Auto_Gold_Play()
         threading.Timer(self.time, self.Auto_Gold_Play).start()  # 1초마다 재귀실행
-
-
 
 Cbt = [0, 0, 0]
 Cbt[0] = Click_Upgrade_button("test1", 10, 1.2, 1,0)
@@ -151,13 +154,14 @@ Abt[2] = Auto_Upgrade_button("test3", 3000, 1.2, 10,2,3)
 def Save():
     f = open("info.txt", 'w')
     SaveUpdate = ''
-    SaveUpdate += str(gold)+'\n' + str(gold_per_click) + \
-        '\n'+str(gold_per_sec)+'\n'
+    SaveUpdate += str(gold)+'\n' + str(gold_per_click) + '\n'
+        # '\n'+str(gold_per_sec)
     SaveUpdate += str(len(Cbt))+'\n'
     for i in range(0, len(Cbt)):
         SaveUpdate += str(Cbt[i].GetLevel()) + '\n'
     SaveUpdate += str(len(Abt))+'\n'
     for i in range(0, len(Abt)):
+
         SaveUpdate += str(Abt[i].GetLevel()) + '\n'
     f.write(str(SaveUpdate))
     f.close()
@@ -166,13 +170,13 @@ def Save():
 def Load():
     global gold
     global gold_per_click
-    global gold_per_sec
+    # global gold_per_sec
 
     f = open("info.txt", 'r')
 
     gold = int(f.readline())
     gold_per_click = int(f.readline())
-    gold_per_sec = int(f.readline())
+    # gold_per_sec = int(f.readline())
 
     Cbtindex = 3
     Cbtindex = int(f.readline())
