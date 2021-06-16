@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.ttk import *
 from pathlib import Path
+from tkinter import messagebox
 import time
 import threading
 
@@ -30,6 +31,11 @@ gold_per_click_Labal = Label(window, textvariable=gold_per_click_text).grid(
 # gold_per_sec_text.set(gold_per_sec)  # 골드perSec 텍스트를 골드perSec로 지정 (초기값 = 0)
 # gold_per_sec_Labal = Label(window, textvariable=gold_per_sec_text).grid(row=0, column=2)  # 골드perSec를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
+crystal = 0
+crystal_text = StringVar()  # 골드를 표시할 골드_텍스트를 텍스트 형식으로 지정
+crystal_text.set(crystal)  # 골드 텍스트를 골드로 지정 (초기값 = 0)
+crystal_Labal = Label(window, textvariable=crystal_text).grid(
+    row=0, column=4)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 def Button_OnClick():  # 버튼을 누를때마다 실행되는 함수
     global gold  # 골드를 글로벌 함수로 지정해서 참조할수 있게 만듬
@@ -42,9 +48,31 @@ gold_Button = Button(window, text='Button', command=Button_OnClick).grid(
     row=5, column=1)  # 골드 버튼을 만들고 누를때마다 함수를 실행시킴
 
 
+
+def GoldToCrystal():
+    MsgBox = messagebox.askyesno("Ask Yes/No", "10000gold => 1crystal\n다른 모든 업그레이드가 초기화 됩니다\n크리스탈을 사용한 업그레이드 제외")
+    if (MsgBox == True):
+        global gold
+        global gold_per_click
+        global crystal
+        print(int(gold/10000))
+        crystal += int(gold/10000)
+        crystal_text.set(crystal)
+        gold = 0
+        gold_per_click = 0
+        Cbtindex = len(Cbt)
+        for i in range(0, Cbtindex):
+            Cbt[i].SetLevel(0)
+
+        Abtindex = len(Abt)
+        for i in range(0, Abtindex):
+            Abt[i].SetLevel(0)
+
+toCrystal_Button = Button(window, text='toCrystal', command=GoldToCrystal).grid(
+    row=0, column=5)
+
 def Upgrade_Cost(startCost, level, pow):  # 밸런스
     return int((level*pow)**2+(level*(pow+startCost)))+startCost
-
 
 class Click_Upgrade_button():
     def __init__(self, name, startCost, cost_pow, upgrade_pow, index):  # 이름, 비용, 비용 증가량, 업그레이드 수치
@@ -124,7 +152,11 @@ class Auto_Upgrade_button():
     def SetLevel(self, level):
         self.level = level
         self.cost = Upgrade_Cost(self.startCost, self.level, self.cost_pow)
-        if(level !=0) : self.fristUpgrade()
+        if(level !=0) :
+            self.fristUpgrade()
+        else: 
+            self.progressbar.grid_remove()
+            self.t.cancel()
         self.UI_Update()  # UI 업데이트
 
     def fristUpgrade(self):
@@ -153,8 +185,8 @@ class Auto_Upgrade_button():
         #     self.progressbar.step(10)
         #     if self.V_PB.get() >= self.time*10 : break
         # self.Auto_Gold_Play()
-        threading.Timer(self.time, self.Auto_Gold_Play).start()  # 1초마다 재귀실행
-
+        self.t = threading.Timer(self.time, self.Auto_Gold_Play)
+        self.t.start()
 
 Cbt = [0, 0, 0]
 Cbt[0] = Click_Upgrade_button("test1", 10, 1.2, 1, 0)
@@ -168,7 +200,6 @@ Abt[2] = Auto_Upgrade_button("test3", 3000, 1.2, 10, 2, 3)
 
 #함수 마지막에 1초 후에 다시 동일 함수를 실행함으로써 1초마다 재귀실행되는 함수 생성
 
-
 def Save():
     f = open("info.txt", 'w')
     SaveUpdate = ''
@@ -181,6 +212,8 @@ def Save():
     for i in range(0, len(Abt)):
 
         SaveUpdate += str(Abt[i].GetLevel()) + '\n'
+
+
     f.write(str(SaveUpdate))
     f.close()
 
