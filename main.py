@@ -7,8 +7,19 @@ import threading
 
 window = Tk()
 
-window.geometry('400x400')
+window.geometry('600x300')
 #변수 선언
+
+notebook = Notebook(window, width=300, height=300, takefocus=True)
+notebook.grid(row=1,column=1)
+
+frame1 = Frame(window)
+notebook.add(frame1, text="GoldPerClickUpgrade")
+frame2 = Frame(window)
+notebook.add(frame2, text="GoldPerTimeUpgrade")
+frame3 = Frame(window)
+notebook.add(frame3, text="CrystalUpgrade")
+
 
 #gold 선언
 gold = 0
@@ -59,7 +70,7 @@ def GoldToCrystal():
         crystal += int(gold/10000)
         crystal_text.set(crystal)
         gold = 0
-        gold_per_click = 0
+        gold_per_click = 1
         Cbtindex = len(Cbt)
         for i in range(0, Cbtindex):
             Cbt[i].SetLevel(0)
@@ -68,7 +79,7 @@ def GoldToCrystal():
         for i in range(0, Abtindex):
             Abt[i].SetLevel(0)
 
-toCrystal_Button = Button(window, text='toCrystal', command=GoldToCrystal).grid(
+toCrystal_Button = Button(frame3, text='toCrystal', command=GoldToCrystal).grid(
     row=0, column=5)
 
 def Upgrade_Cost(startCost, level, pow):  # 밸런스
@@ -85,7 +96,7 @@ class Click_Upgrade_button():
         self.text = StringVar()  # 버튼 text
         self.text.set('loding')  # text 초기화
         self.button = Button(  # 버튼 생성
-            window, textvariable=self.text, command=self.Buy_Click_Upgrade).grid(row=index+1, column=0)
+            frame1, textvariable=self.text, command=self.Buy_Click_Upgrade, width=20).grid(row=index+1, column=0)
         self.UI_Update()  # UI 업데이트
 
     def Buy_Click_Upgrade(self):
@@ -130,7 +141,7 @@ class Auto_Upgrade_button():
         self.text.set("loding")  # 버튼 text 초기화
         self.index= index
         self.button = Button(  # 버튼 생성
-            window, textvariable=self.text, command=self.Buy_Auto_Gold).grid(row=index+1, column=2)
+            frame2, textvariable=self.text, command=self.Buy_Auto_Gold, width=20).grid(row=index+1, column=2)
 
         self.UI_Update()
 
@@ -164,7 +175,7 @@ class Auto_Upgrade_button():
         gold -= self.upgrade_pow*self.level
         self.V_PB = DoubleVar()
         self.progressbar = Progressbar(
-            window, maximum=100*self.time, variable=self.V_PB, length=100, mode="determinate")
+            frame2, maximum=100*self.time, variable=self.V_PB, length=100, mode="determinate")
         self.progressbar.grid(row=self.index+1, column=3)
         self.progressbar.start(6)
         self.Auto_Gold_Play()  # 함수 실행
@@ -188,16 +199,6 @@ class Auto_Upgrade_button():
         self.t = threading.Timer(self.time, self.Auto_Gold_Play)
         self.t.start()
 
-Cbt = [0, 0, 0]
-Cbt[0] = Click_Upgrade_button("test1", 10, 1.2, 1, 0)
-Cbt[1] = Click_Upgrade_button("test2", 200, 1.2, 10, 1)
-Cbt[2] = Click_Upgrade_button("test3", 3000, 1.2, 20, 2)
-
-Abt = [0, 0, 0]
-Abt[0] = Auto_Upgrade_button("test1", 1, 1.2, 1, 0, 1)
-Abt[1] = Auto_Upgrade_button("test2", 1, 1.2, 1000, 1, 10)
-Abt[2] = Auto_Upgrade_button("test3", 3000, 1.2, 10, 2, 3)
-
 #함수 마지막에 1초 후에 다시 동일 함수를 실행함으로써 1초마다 재귀실행되는 함수 생성
 
 def Save():
@@ -205,12 +206,12 @@ def Save():
     SaveUpdate = ''
     SaveUpdate += str(gold)+'\n' + str(gold_per_click) + '\n'
     # '\n'+str(gold_per_sec)
+    SaveUpdate += str(crystal)+'\n'
     SaveUpdate += str(len(Cbt))+'\n'
     for i in range(0, len(Cbt)):
         SaveUpdate += str(Cbt[i].GetLevel()) + '\n'
     SaveUpdate += str(len(Abt))+'\n'
     for i in range(0, len(Abt)):
-
         SaveUpdate += str(Abt[i].GetLevel()) + '\n'
 
 
@@ -222,12 +223,14 @@ def Load():
     global gold
     global gold_per_click
     # global gold_per_sec
-
+    global crystal
     f = open("info.txt", 'r')
 
     gold = int(f.readline())
     gold_per_click = int(f.readline())
     # gold_per_sec = int(f.readline())
+    crystal = int(f.readline())
+    crystal_text.set(crystal)
 
     Cbtindex = 3
     Cbtindex = int(f.readline())
@@ -241,7 +244,19 @@ def Load():
 
     f.close()
 
+Cbt = {}
+Cbt[0] = Click_Upgrade_button("test1", 10, 1.2, 1, 0)
+Cbt[1] = Click_Upgrade_button("test2", 200, 1.2, 10, 1)
+Cbt[2] = Click_Upgrade_button("test3", 3000, 1.2, 20, 2)
 
+Abt = {}
+Abt[0] = Auto_Upgrade_button("test1", 1, 1.2, 1, 0, 1)
+Abt[1] = Auto_Upgrade_button("test2", 1, 1.2, 1000, 1, 10)
+Abt[2] = Auto_Upgrade_button("test3", 3000, 1.2, 10, 2, 3)
+
+
+
+#저장 불러오기 옵션
 menubar = Menu(window)
 filemenu = Menu(menubar, tearoff=0)
 menubar.add_cascade(label="File", menu=filemenu)
