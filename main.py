@@ -96,7 +96,7 @@ class Click_Upgrade_button():
         self.text = StringVar()  # 버튼 text
         self.text.set('loding')  # text 초기화
         self.button = Button(  # 버튼 생성
-            frame1, textvariable=self.text, command=self.Buy_Click_Upgrade, width=20).grid(row=index+1, column=0)
+            frame1, textvariable=self.text, command=self.Buy_Click_Upgrade, width=20).pack(side=TOP,fill='x')
         self.UI_Update()  # UI 업데이트
 
     def Buy_Click_Upgrade(self):
