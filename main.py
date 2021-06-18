@@ -1,4 +1,5 @@
 from tkinter import *
+import tkinter 
 from tkinter.ttk import *
 from pathlib import Path
 from tkinter import messagebox
@@ -7,11 +8,14 @@ import threading
 
 window = Tk()
 
-window.geometry('600x300')
-#변수 선언
+window.geometry('360x730')
 
-notebook = Notebook(window, width=300, height=300, takefocus=True)
-notebook.grid(row=1,column=1)
+frameInfo = tkinter.Frame(window,relief="solid", bd=2)
+frameInfo.pack(side=TOP,fill='x')
+
+
+notebook = Notebook(window, takefocus=True)
+notebook.pack(side=BOTTOM,fill='x')
 
 frame1 = Frame(window)
 notebook.add(frame1, text="GoldPerClickUpgrade")
@@ -20,33 +24,32 @@ notebook.add(frame2, text="GoldPerTimeUpgrade")
 frame3 = Frame(window)
 notebook.add(frame3, text="CrystalUpgrade")
 
+#변수 선언
+
 
 #gold 선언
 gold = 0
 gold_text = StringVar()  # 골드를 표시할 골드_텍스트를 텍스트 형식으로 지정
 gold_text.set(gold)  # 골드 텍스트를 골드로 지정 (초기값 = 0)
-gold_Labal = Label(window, textvariable=gold_text).grid(
-    row=0, column=1)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
+gold_Labal = Label(frameInfo, textvariable=gold_text).pack(side=LEFT,anchor='s')  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 #gold per click 선언
 gold_per_click = 1
 gold_per_click_text = StringVar()  # 골드 per 클릭을 표시할 골드 per 클릭_텍스트를 텍스트 형식으로 지정
 # 골드 per 클릭 텍스트를 골드 per 클릭로 지정 (초기값 = 0)
 gold_per_click_text.set(gold_per_click)
-gold_per_click_Labal = Label(window, textvariable=gold_per_click_text).grid(
-    row=0, column=0)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
+gold_per_click_Labal = Label(frameInfo, textvariable=gold_per_click_text).pack(side=LEFT,anchor='center')  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 #gold per sec 선언
 # gold_per_sec = 0
 # gold_per_sec_text = StringVar()  # 골드perSec를 표시할 골드perSec_텍스트를 텍스트 형식으로 지정
 # gold_per_sec_text.set(gold_per_sec)  # 골드perSec 텍스트를 골드perSec로 지정 (초기값 = 0)
-# gold_per_sec_Labal = Label(window, textvariable=gold_per_sec_text).grid(row=0, column=2)  # 골드perSec를 표시할 tk.labal을 생성 후 골드 택스트를 연결
+# gold_per_sec_Labal = Label(frameInfo, textvariable=gold_per_sec_text).grid(row=0, column=2)  # 골드perSec를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 crystal = 0
 crystal_text = StringVar()  # 골드를 표시할 골드_텍스트를 텍스트 형식으로 지정
 crystal_text.set(crystal)  # 골드 텍스트를 골드로 지정 (초기값 = 0)
-crystal_Labal = Label(window, textvariable=crystal_text).grid(
-    row=0, column=4)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
+crystal_Labal = Label(frameInfo, textvariable=crystal_text).pack(side=RIGHT,anchor='n')  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 def Button_OnClick():  # 버튼을 누를때마다 실행되는 함수
     global gold  # 골드를 글로벌 함수로 지정해서 참조할수 있게 만듬
@@ -55,8 +58,8 @@ def Button_OnClick():  # 버튼을 누를때마다 실행되는 함수
     gold_text.set(gold)  # 골드를 표시해주는 골드 텍스트를 업데이트 해줌
 
 
-gold_Button = Button(window, text='Button', command=Button_OnClick).grid(
-    row=5, column=1)  # 골드 버튼을 만들고 누를때마다 함수를 실행시킴
+gold_Button = tkinter.Button(window, text='Button', command=Button_OnClick,height=400).pack(
+   side=TOP,fill='both')  # 골드 버튼을 만들고 누를때마다 함수를 실행시킴
 
 
 
@@ -140,9 +143,12 @@ class Auto_Upgrade_button():
         self.text = StringVar()  # 버튼 text 선언
         self.text.set("loding")  # 버튼 text 초기화
         self.index= index
+        self.V_PB = DoubleVar()
         self.button = Button(  # 버튼 생성
-            frame2, textvariable=self.text, command=self.Buy_Auto_Gold, width=20).grid(row=index+1, column=2)
-
+            frame2, textvariable=self.text, command=self.Buy_Auto_Gold, width=20).pack(side=TOP,fill='x')
+        self.progressbar = Progressbar(
+            frame2, maximum=100*self.time, variable=self.V_PB, length=100, mode="determinate")
+        self.progressbar.pack(side=TOP,fill='x')
         self.UI_Update()
 
     def Buy_Auto_Gold(self):  # 버튼을 누를때 실행
@@ -174,9 +180,6 @@ class Auto_Upgrade_button():
         global gold 
         gold -= self.upgrade_pow*self.level
         self.V_PB = DoubleVar()
-        self.progressbar = Progressbar(
-            frame2, maximum=100*self.time, variable=self.V_PB, length=100, mode="determinate")
-        self.progressbar.grid(row=self.index+1, column=3)
         self.progressbar.start(6)
         self.Auto_Gold_Play()  # 함수 실행
 
