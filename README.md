@@ -1,6 +1,6 @@
 # PyClickerProject
 ## 메인화면
-![image](https://user-images.githubusercontent.com/32871806/124960902-c8c40c00-e057-11eb-830b-387a2bb8a7dc.png)
+![image](https://user-images.githubusercontent.com/32871806/124961885-f52c5800-e058-11eb-9c5f-9d630676fa22.png)
 ## imfo(정보)
 ![image](https://user-images.githubusercontent.com/32871806/124960927-d083b080-e057-11eb-9440-c0481dcc5dca.png)
 |이름|설명|
