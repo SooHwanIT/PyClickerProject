@@ -6,11 +6,11 @@ from tkinter import messagebox
 import time
 import threading
 
-window = Tk()
+window = Tk() # TK() 모듈 사용
 
-window.geometry('360x730')
+window.geometry('360x730') #윈도우 창 크기 지정 
 
-frameInfo = tkinter.Frame(window,relief="solid", bd=2)
+frameInfo = tkinter.Frame(window,relief="solid", bd=2) #정보 창 골드 클릭퍼 골드 크리스탈
 frameInfo.pack(side=TOP,fill='x')
 
 
@@ -31,14 +31,15 @@ notebook.add(frame3, text="CrystalUpgrade")
 gold = 0
 gold_text = StringVar()  # 골드를 표시할 골드_텍스트를 텍스트 형식으로 지정
 gold_text.set(gold)  # 골드 텍스트를 골드로 지정 (초기값 = 0)
+text_g = Label(frameInfo, text="Gold : ").pack(side=LEFT) 
 gold_Labal = Label(frameInfo, textvariable=gold_text).pack(side=LEFT,anchor='s')  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 #gold per click 선언
 gold_per_click = 1
 gold_per_click_text = StringVar()  # 골드 per 클릭을 표시할 골드 per 클릭_텍스트를 텍스트 형식으로 지정
-# 골드 per 클릭 텍스트를 골드 per 클릭로 지정 (초기값 = 0)
-gold_per_click_text.set(gold_per_click)
-gold_per_click_Labal = Label(frameInfo, textvariable=gold_per_click_text).pack(side=LEFT,anchor='center')  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
+gold_per_click_text.set(gold_per_click)# 골드 per 클릭 텍스트를 골드 per 클릭로 지정 (초기값 = 0)
+text_gpc = Label(frameInfo, text="GPC : ").pack(side=LEFT)  # 
+gold_per_click_Labal = Label(frameInfo, textvariable=gold_per_click_text).pack(side=LEFT)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 #gold per sec 선언
 # gold_per_sec = 0
@@ -49,7 +50,8 @@ gold_per_click_Labal = Label(frameInfo, textvariable=gold_per_click_text).pack(s
 crystal = 0
 crystal_text = StringVar()  # 골드를 표시할 골드_텍스트를 텍스트 형식으로 지정
 crystal_text.set(crystal)  # 골드 텍스트를 골드로 지정 (초기값 = 0)
-crystal_Labal = Label(frameInfo, textvariable=crystal_text).pack(side=RIGHT,anchor='n')  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
+text_c = Label(frameInfo, text="crystal : ").pack(side=LEFT)  # 
+crystal_Labal = Label(frameInfo, textvariable=crystal_text).pack(side=LEFT)  # 골드를 표시할 tk.labal을 생성 후 골드 택스트를 연결
 
 def Button_OnClick():  # 버튼을 누를때마다 실행되는 함수
     global gold  # 골드를 글로벌 함수로 지정해서 참조할수 있게 만듬
@@ -248,10 +250,12 @@ def Load():
     f.close()
 
 Cbt = {}
+# name, startCost, cost_pow, upgrade_pow, index
 Cbt[0] = Click_Upgrade_button("test1", 10, 1.2, 1, 0)
 Cbt[1] = Click_Upgrade_button("test2", 200, 1.2, 10, 1)
 Cbt[2] = Click_Upgrade_button("test3", 3000, 1.2, 20, 2)
 
+# name, startCost, cost_pow, upgrade_pow, index, time
 Abt = {}
 Abt[0] = Auto_Upgrade_button("test1", 1, 1.2, 1, 0, 1)
 Abt[1] = Auto_Upgrade_button("test2", 1, 1.2, 1000, 1, 10)
